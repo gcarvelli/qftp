@@ -33,10 +33,14 @@ public class QFTPControlServer implements Runnable {
             String line = reader.readLine();
             File f = new File(QFTPServer.directoryRoot + line);
             if(f.exists() && !f.isDirectory()) {
+                QFTPPosition position = new QFTPPosition();
+                position.position = 0;
+                position.filename = f.getAbsolutePath();
+                positionCache.put(socket.getInetAddress().toString(), position);
+
                 writer.write("200 file found\r\n");
                 writer.flush();
                 writer.close();
-
             } else {
                 writer.write("500 file not found\r\n");
                 writer.flush();

@@ -13,7 +13,7 @@ public class QFTPServer {
         positionCache = new HashMap<>();
         directoryRoot = args[1];
 
-        new Thread(new QFTPControlServer(positionCache)).run();
+        new Thread(new QFTPControlServer(positionCache)).start();
 
         ServerSocket serverSocket;
         try {
