@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.HashMap;
@@ -26,13 +23,17 @@ public class QFTPSession {
 
             if(positionCache.keySet().contains(remoteAddress)) {
                 File f = new File(positionCache.get(remoteAddress).filename);
-                FileInputStream fileStream = new FileInputStream(f);
+                RandomAccessFile fileStream = new RandomAccessFile(f.getAbsoluteFile(), "r");
+                fileStream.seek(positionCache.get(remoteAddress).position);
                 byte[] buffer = new byte[1024];
-                int bytesRead = fileStream.read(buffer, positionCache.get(remoteAddress).position, 500);
+                int bytesRead = fileStream.read(buffer, 0, 500);
 
                 if(bytesRead > 0) {
                     writer.write(toCharBuffer(buffer));
                     writer.write("\r\n");
+                    System.out.println("wrote " + bytesRead + " bytes");
+                    positionCache.get(remoteAddress).position += bytesRead;
+                    System.out.println("new position for " + remoteAddress + ": " + positionCache.get(remoteAddress).position);
                 } else {
                     positionCache.remove(remoteAddress);
                 }
