@@ -26,7 +26,7 @@ public class QFTPSession {
                 RandomAccessFile fileStream = new RandomAccessFile(f.getAbsoluteFile(), "r");
                 fileStream.seek(positionCache.get(remoteAddress).position);
                 byte[] buffer = new byte[1024];
-                int bytesRead = fileStream.read(buffer, 0, 500);
+                int bytesRead = fileStream.read(buffer, 0, 510);
 
                 if(bytesRead > 0) {
                     writer.write(toCharBuffer(buffer));
