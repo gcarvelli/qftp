@@ -6,6 +6,8 @@ import java.util.HashMap;
 public class QFTPServer {
 
     public static String directoryRoot;
+    public static int controlPort;
+    public static String welcomeMessage = "200 Welcome to the server, please enter the file you would like to download.";
     private static HashMap<String, QFTPPosition> positionCache;
 
     public static void main(String[] args) {
@@ -22,7 +24,8 @@ public class QFTPServer {
 
         ServerSocket serverSocket;
         try {
-            serverSocket = new ServerSocket(Integer.parseInt(args[0]));
+            controlPort = Integer.parseInt(args[0]);
+            serverSocket = new ServerSocket(controlPort);
         } catch (IOException e) {
             System.err.println("Problem connecting to port 17, please use sudo.");
             return;

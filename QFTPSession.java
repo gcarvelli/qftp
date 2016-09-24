@@ -43,7 +43,7 @@ public class QFTPSession {
             } else {
                 System.out.println("remote address: " + remoteAddress);
                 System.out.println("keyset: " + positionCache.keySet());
-                writer.write("You're not in the dictionary \r\n");
+                writer.write("400 No file transfer is in progress for your IP. Connect to port " + QFTPServer.controlPort + " to begin a file transfer.\r\n");
             }
 
             writer.flush();

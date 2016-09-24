@@ -32,6 +32,8 @@ public class QFTPControlServer implements Runnable {
             System.out.println("newConnection starting");
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            writer.write(QFTPServer.welcomeMessage + "\r\n");
+            writer.flush();
             String line = reader.readLine();
             // Make sure we're not getting hacked
             Path path;
