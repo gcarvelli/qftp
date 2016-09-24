@@ -1,0 +1,3 @@
+default:
+	javac **.java
+
