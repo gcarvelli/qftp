@@ -1,8 +1,5 @@
 import java.nio.file.Path;
 
-/**
- * Created by gcarvelli on 9/23/16.
- */
 public class QFTPSecurity {
 
     public static Path resolvePath(final Path baseDirPath, final Path userPath) {
