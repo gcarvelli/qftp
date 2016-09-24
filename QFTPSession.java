@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.HashMap;
 
 public class QFTPSession {

@@ -10,6 +10,11 @@ public class QFTPServer {
 
     public static void main(String[] args) {
 
+        if(args.length != 2) {
+            System.out.println("usage: java QFTPServer <control port> <directory root>");
+            return;
+        }
+
         positionCache = new HashMap<>();
         directoryRoot = args[1];
 
