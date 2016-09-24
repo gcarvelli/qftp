@@ -34,6 +34,10 @@ public class QFTPSession {
                     System.out.println("wrote " + bytesRead + " bytes");
                     positionCache.get(remoteAddress).position += bytesRead;
                     System.out.println("new position for " + remoteAddress + ": " + positionCache.get(remoteAddress).position);
+
+                    if(fileStream.read() == -1) {
+                        positionCache.remove(remoteAddress);
+                    }
                 } else {
                     positionCache.remove(remoteAddress);
                 }
