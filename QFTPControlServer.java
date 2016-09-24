@@ -47,6 +47,7 @@ public class QFTPControlServer implements Runnable {
 
             // Make sure the file exists
             File f = new File(path.toString());
+            positionCache.remove(socket.getInetAddress().toString());
             if(f.exists() && !f.isDirectory()) {
                 QFTPPosition position = new QFTPPosition();
                 position.position = 0;
@@ -59,6 +60,7 @@ public class QFTPControlServer implements Runnable {
             } else {
                 writer.write("500 file not found\r\n");
                 writer.flush();
+                writer.close();
             }
         }catch (IOException e) {
             e.printStackTrace();
