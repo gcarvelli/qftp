@@ -1,3 +1,7 @@
+import QFTP.QFTPContext;
+import QFTP.QFTPControlServer;
+import QFTP.QFTPSession;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -5,10 +9,8 @@ import java.util.HashMap;
 
 public class QFTPServer {
 
-    public static String directoryRoot;
-    public static int controlPort;
-    public static String welcomeMessage = "200 Welcome to the server, please enter the file you would like to download.";
-    private static HashMap<String, QFTPPosition> positionCache;
+    private static String welcomeMessage = "200 Welcome to the server, please enter the file you would like to download.";
+    private static QFTPContext context;
 
     public static void main(String[] args) {
 
@@ -17,15 +19,17 @@ public class QFTPServer {
             return;
         }
 
-        positionCache = new HashMap<>();
-        directoryRoot = args[1];
+        context = new QFTPContext();
+        context.positionCache = new HashMap<>();
+        context.welcomeMessage = welcomeMessage;
+        context.directoryRoot = args[1];
 
-        new Thread(new QFTPControlServer(positionCache)).start();
+        new Thread(new QFTPControlServer(context)).start();
 
         ServerSocket serverSocket;
         try {
-            controlPort = Integer.parseInt(args[0]);
-            serverSocket = new ServerSocket(controlPort);
+            context.controlPort = Integer.parseInt(args[0]);
+            serverSocket = new ServerSocket(context.controlPort);
         } catch (IOException e) {
             System.err.println("Problem connecting to port 17, please use sudo.");
             return;
@@ -36,7 +40,7 @@ public class QFTPServer {
                 Socket socket = serverSocket.accept();
                 new Thread(() -> {
                     try {
-                        new QFTPSession(socket, positionCache).run();
+                        new QFTPSession(context, socket).run();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

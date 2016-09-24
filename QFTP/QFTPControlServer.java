@@ -1,15 +1,16 @@
+package QFTP;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 
 public class QFTPControlServer implements Runnable {
-    private HashMap<String, QFTPPosition> positionCache;
+    private QFTPContext context;
 
-    public QFTPControlServer(HashMap<String, QFTPPosition> positionCache) {
-        this.positionCache = positionCache;
+    public QFTPControlServer(QFTPContext context) {
+        this.context = context;
     }
 
     public void run() {
@@ -32,13 +33,13 @@ public class QFTPControlServer implements Runnable {
             System.out.println("newConnection starting");
             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
-            writer.write(QFTPServer.welcomeMessage + "\r\n");
+            writer.write(context.welcomeMessage + "\r\n");
             writer.flush();
             String line = reader.readLine();
             // Make sure we're not getting hacked
             Path path;
             try {
-                path = QFTPSecurity.resolvePath(Paths.get(QFTPServer.directoryRoot), Paths.get(line));
+                path = QFTPSecurity.resolvePath(Paths.get(context.directoryRoot), Paths.get(line));
             }  catch (IllegalArgumentException e) {
                 writer.write(e.getMessage() + "\r\n");
                 writer.flush();
@@ -49,18 +50,18 @@ public class QFTPControlServer implements Runnable {
 
             // Make sure the file exists
             File f = new File(path.toString());
-            positionCache.remove(socket.getInetAddress().toString());
+            context.positionCache.remove(socket.getInetAddress().toString());
             if(f.exists() && !f.isDirectory()) {
                 QFTPPosition position = new QFTPPosition();
                 position.position = 0;
                 position.filename = f.getAbsolutePath();
-                positionCache.put(socket.getInetAddress().toString(), position);
+                context.positionCache.put(socket.getInetAddress().toString(), position);
 
                 writer.write("200 file found\r\n");
                 writer.flush();
                 writer.close();
             } else {
-                writer.write("500 file not found\r\n");
+                writer.write("400 file not found\r\n");
                 writer.flush();
                 writer.close();
             }

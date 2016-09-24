@@ -1,18 +1,19 @@
+package QFTP;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
 
 public class QFTPSession {
 
+    private QFTPContext context;
     private Socket socket;
     private PrintWriter writer;
-    private HashMap<String, QFTPPosition> positionCache;
 
-    public QFTPSession(Socket socket, HashMap<String, QFTPPosition> positionCache) throws IOException {
+    public QFTPSession(QFTPContext context, Socket socket) throws IOException {
         System.out.println("starting session");
         this.socket = socket;
         this.writer = new PrintWriter(socket.getOutputStream());
-        this.positionCache = positionCache;
+        this.context = context;
     }
 
     public void run() {
@@ -20,10 +21,10 @@ public class QFTPSession {
             String remoteAddress = socket.getInetAddress().toString();
             System.out.println("running session for " + remoteAddress);
 
-            if(positionCache.keySet().contains(remoteAddress)) {
-                File f = new File(positionCache.get(remoteAddress).filename);
+            if(context.positionCache.keySet().contains(remoteAddress)) {
+                File f = new File(context.positionCache.get(remoteAddress).filename);
                 RandomAccessFile fileStream = new RandomAccessFile(f.getAbsoluteFile(), "r");
-                fileStream.seek(positionCache.get(remoteAddress).position);
+                fileStream.seek(context.positionCache.get(remoteAddress).position);
                 byte[] buffer = new byte[1024];
                 int bytesRead = fileStream.read(buffer, 0, 510);
 
@@ -31,19 +32,19 @@ public class QFTPSession {
                     writer.write(toCharBuffer(buffer));
                     writer.write("\r\n");
                     System.out.println("wrote " + bytesRead + " bytes");
-                    positionCache.get(remoteAddress).position += bytesRead;
-                    System.out.println("new position for " + remoteAddress + ": " + positionCache.get(remoteAddress).position);
+                    context.positionCache.get(remoteAddress).position += bytesRead;
+                    System.out.println("new position for " + remoteAddress + ": " + context.positionCache.get(remoteAddress).position);
 
                     if(fileStream.read() == -1) {
-                        positionCache.remove(remoteAddress);
+                        context.positionCache.remove(remoteAddress);
                     }
                 } else {
-                    positionCache.remove(remoteAddress);
+                    context.positionCache.remove(remoteAddress);
                 }
             } else {
                 System.out.println("remote address: " + remoteAddress);
-                System.out.println("keyset: " + positionCache.keySet());
-                writer.write("400 No file transfer is in progress for your IP. Connect to port " + QFTPServer.controlPort + " to begin a file transfer.\r\n");
+                System.out.println("keyset: " + context.positionCache.keySet());
+                writer.write("400 No file transfer is in progress for your IP. Connect to port " + context.controlPort + " to begin a file transfer.\r\n");
             }
 
             writer.flush();
