@@ -5,4 +5,4 @@ Tired of the overhead and sluggishness of encrypted file transfer? Looking for a
 QFTP uses a combination of control socket and repeated [QotD](https://tools.ietf.org/html/rfc865) connections to transfer your files 512 delectable bytes at a time.
 
 ## DISCLAIMER
-Please never actually use this for anything ever
+Please don't use this for anything ever.
